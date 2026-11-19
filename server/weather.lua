@@ -38,8 +38,9 @@ CreateThread(function()
     end
 end)
 
--- wasabi_adminmenu with Config.WeatherSystem = 'qb' fires these.
-RegisterNetEvent('qb-weathersync:server:setWeather', function(weatherType)
+-- wasabi_adminmenu with Config.WeatherSystem = 'qb' fires these from its own server side, after its own admin check.
+-- They are server-only handlers on purpose: as net events any player's game could set the weather, time or blackout.
+AddEventHandler('qb-weathersync:server:setWeather', function(weatherType)
     if type(weatherType) ~= 'string' or not ndStarted() then return end
     local ok, err = pcall(function() exports[ND]:SetWeather(weatherType:upper()) end)
     if not ok then print(('[dps-weatherbridge] SetWeather failed: %s'):format(tostring(err))) end
@@ -47,14 +48,14 @@ RegisterNetEvent('qb-weathersync:server:setWeather', function(weatherType)
     refresh()
 end)
 
-RegisterNetEvent('qb-weathersync:server:setTime', function(hour, minute)
+AddEventHandler('qb-weathersync:server:setTime', function(hour, minute)
     hour, minute = tonumber(hour), tonumber(minute) or 0
     if not hour or not ndStarted() then return end
     local ok, err = pcall(function() exports[ND]:SetTime(hour, minute) end)
     if not ok then print(('[dps-weatherbridge] SetTime failed: %s'):format(tostring(err))) end
 end)
 
-RegisterNetEvent('qb-weathersync:server:toggleBlackout', function()
+AddEventHandler('qb-weathersync:server:toggleBlackout', function()
     if not ndStarted() then return end
     pcall(function() exports[ND]:ToggleBlackout() end)
 end)
